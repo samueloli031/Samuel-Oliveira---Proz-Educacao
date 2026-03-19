@@ -1,1 +1,638 @@
+# ---> Definições, lista e dicionário:
+clientes = {}
+telefones = set()
+servicos = {
+  1: {'nome_serv': 'Banho', 'preco_serv': 80},
+  2: {'nome_serv': 'Tosa', 'preco_serv': 100},
+  3: {'nome_serv': 'Consulta', 'preco_serv': 120},
+  4: {'nome_serv': 'Hospedagem', 'preco_serv': 150}
+}
 
+#Função para chamar um título
+def titulo(texto):
+  print(f'\n{"="*10} {texto} {"="*10}')
+
+#Função para validar a entrada de dados como número inteiro
+def ler_opcao(mensagem, opcoes_validas):
+  while True:
+    opcao = input(mensagem)
+    if opcao.isdigit() and int(opcao) in opcoes_validas:
+      return int(opcao)
+
+    print("\n⚠️ Opção inválida!")
+
+#Função para finalizar o sistema
+def sair():
+  titulo("🐾 SISTEMA FINALIZADO 🐾")
+  print(f"\nPet shop da Proz agradece a visita! 💜🐶\nVolte sempre! 😉\n")
+
+#Função para limpar o cpf
+def limpar_cpf(cpf):
+  return cpf.replace('.','').replace('-','').replace(',','').replace(' ','')
+
+#Função para formatar o cpf
+def formatar_cpf(cpf):
+  cpf = limpar_cpf(cpf)
+  return f"{cpf[:3]}.{cpf[3:6]}.{cpf[6:9]}-{cpf[9:]}"
+
+#Função para limpar o telefone
+def limpar_telefone(telefone):
+  return telefone.replace("(","").replace(")","").replace("-","").replace(" ","")
+
+#Função para formatar o telefone
+def formatar_telefone(telefone):
+  telefone = limpar_telefone(telefone)
+
+  if len(telefone) == 11:
+    return f"({telefone[:2]}) {telefone[2:7]}-{telefone[7:]}"
+  elif len(telefone) == 10:
+    return f"({telefone[:2]}) {telefone[2:6]}-{telefone[6:]}"
+  else:
+    return telefone
+
+#Função para limpar o CEP
+def limpar_cep(cep):
+  return cep.replace(" ","").replace("-","").replace(".","")
+
+#Formatar CEP para 00000-000
+def formatar_cep(cep):
+  cep = limpar_cep(cep)
+  return f"{cep[:5]}-{cep[5:]}"
+
+#------------------------------------------------------------------#
+
+#Função para o menu principal com todas as funções
+def menu_principal():
+
+  while True:
+    titulo("🐾🐱 SISTEMA PET SHOP 🐱🐾")
+
+    print('''
+    - PÁGINA INICIAL -
+1 - Menu do cliente
+2 - Menu do pet
+3 - Menu de serviços
+4 - Listar clientes
+5 - Listar Pets
+6 - Listar serviços realizados
+7 - Buscar pet
+8 - Histórico do cliente
+0 - Sair
+''')
+
+    opcao_clientes = ler_opcao("Qual opção deseja escolher? ",[0,1,2,3,4,5,6,7,8])
+
+    if opcao_clientes == 1:
+      menu_cliente()
+    elif opcao_clientes == 2:
+      menu_pet()
+    elif opcao_clientes == 3:
+      menu_servicos()
+    elif opcao_clientes == 4:
+      listar_clientes()
+    elif opcao_clientes == 5:
+      listar_pets()
+    elif opcao_clientes == 6:
+      servicos_realizados()
+    elif opcao_clientes == 7:
+      buscar_pet()
+    elif opcao_clientes == 8:
+      historico_cliente()
+    elif opcao_clientes == 0:
+      sair()
+      break
+
+#Função para coletar dados do cliente
+def menu_cliente():
+
+  while True:
+    titulo("📝👤 MENU DO CLIENTE 👤📝")
+
+    print('''
+    - PÁGINA INICIAL -
+1 - Cadastrar cliente
+2 - Listar clientes cadastrados
+9 - Voltar ao menu anterior
+''')
+
+    opcao_clientes = ler_opcao("Qual opção deseja escolher? ",[1,2,9])
+
+    if opcao_clientes == 1:
+      cadastrar_cliente()
+    elif opcao_clientes == 2:
+      listar_clientes()
+    elif opcao_clientes == 9:
+      print("\n↩️ Voltando ao menu anterior...")
+      return
+
+#Função para cadastrar o cliente
+def cadastrar_cliente():
+
+  while True:
+    print("\n   - DADOS PESSOAIS -")
+
+    while True:
+      nome_cliente = input("Informe seu nome completo: ").strip().title()
+      if not nome_cliente:
+        print("⚠️ Nome não pode estar vazio.")
+        continue
+      if not nome_cliente.replace(" ", "").isalpha() or (len(nome_cliente) <= 1):
+        print("⚠️ Nome inválido.")
+        continue
+      break
+
+    while True:
+      cpf_cliente = input("CPF: ").strip()
+      cpf_limpo = limpar_cpf(cpf_cliente)
+      if not cpf_cliente:
+        print("⚠️ CPF não pode estar vazio.")
+        continue
+      if not cpf_limpo.isdigit():
+        print("⚠️ CPF não pode conter letras.")
+        continue
+      if not len(cpf_limpo) == 11:
+        print("⚠️ CPF deve conter 11 dígitos.")
+        continue
+      if cpf_limpo in clientes:
+        print(f'⚠️ CPF "{formatar_cpf(cpf_limpo)}" já cadastrado!')
+        continue
+      break
+
+    while True:
+      telefone = input("Telefone: ").strip()
+      telefone_limpo = limpar_telefone(telefone)
+      if not telefone:
+        print("⚠️ Telefone não pode estar vazio.")
+        continue
+      if not telefone_limpo.isdigit():
+        print("⚠️ Telefone não deve conter letras.")
+        continue
+      if len(telefone_limpo) < 10 or len(telefone_limpo) > 11:
+        print("⚠️ Telefone inválido. Digite DDD + número.")
+        continue
+      if telefone_limpo in telefones:
+        print("⚠️ Telefone já cadastrado!")
+        continue
+      break
+
+    while True:
+      email = input("E-mail: ").strip().lower()
+      if not email:
+        print("⚠️ E-mail não pode estar vazio.")
+        continue
+      if not (len(email) >= 6 and "@" in email and "." in email.split("@")[-1] and " " not in email):
+        print("⚠️ E-mail incorreto.")
+        email = email
+        continue
+      break
+
+    print("\n   - ENDEREÇO -")
+    while True:
+      estado = input("Estado: ").strip().upper()
+      if not estado:
+        print("⚠️ Estado não pode estar vazio.")
+        continue
+      if not estado.replace(" ","").isalpha() or len(estado) <=1:
+        print("⚠️ Estado inválido.")
+        continue
+      break
+
+    while True:
+      cidade = input("Cidade: ").strip().title()
+      if not cidade:
+        print("⚠️ Cidade não pode estar vazia.")
+        continue
+      if not cidade.replace(" ","").isalpha() or len(cidade) <=1:
+        print("⚠️ Cidade inválida.")
+        continue
+      break
+
+    while True:
+      bairro = input("Bairro: ").strip().title()
+      if not bairro:
+        print("⚠️ Bairro não pode estar vazio.")
+        continue
+      if not bairro.replace(" ","").isalpha() or len(bairro) <=1:
+        print("⚠️ Bairro inválido.")
+        continue
+      break
+
+    while True:
+      rua = input("Rua: ").title()
+      if not rua.replace(" ",""):
+        print("⚠️ Rua não pode estar vazio.")
+        continue
+      if not rua.startswith(("R", "R.", "Rua")):
+        rua = f"Rua {rua}"
+      break
+
+    while True:
+      numero = input('Número da residência (Informe "S/N" para sem número): ').strip().lower()
+      if not numero:
+        print("⚠️ Número não pode estar vazio.")
+        continue
+      if numero.isdigit():
+        numero = int(numero)
+        break
+      else:
+        if numero == "s/n":
+          break
+        else:
+          print("⚠️ Número inválido.")
+
+    while True:
+      cep = input("CEP: ").strip()
+      cep_limpo = limpar_cep(cep)
+      if not cep_limpo:
+        print("⚠️ CEP não pode estar vazio.")
+        continue
+      if len(cep_limpo) != 8:
+        print("⚠️ CEP precisa conter 8 dígitos.")
+        continue
+      if not cep_limpo.isdigit():
+        print("⚠️ CEP não pode conter letras.")
+        continue
+      cep_formatado = formatar_cep(cep_limpo)
+      endereco = f"{rua}, {numero}, {bairro}, {cidade}/{estado} - {cep_formatado}"
+      break
+
+    clientes[cpf_limpo] = {
+    "nome_cliente": nome_cliente,
+    "telefone": telefone,
+    "email": email,
+    "endereco": endereco
+    }
+    telefones.add(telefone_limpo)
+
+    print("\n✅ Cliente cadastrado com sucesso!")
+
+    print('''
+      - O que deseja fazer agora? -
+  1 - Cadastrar outro cliente
+  2 - Listar clientes cadastrados
+  9 - Voltar ao menu anterior
+  ''')
+
+    opcao_clientes = ler_opcao("Digite uma opção: ",[1,2,9])
+
+    if opcao_clientes == 1:
+      continue
+    elif opcao_clientes == 2:
+      listar_clientes()
+    elif opcao_clientes == 9:
+      print("\n↩️ Voltando ao menu anterior...")
+      return
+
+#Função para listar os clientes cadastrados
+def listar_clientes():
+  titulo("📃👥 LISTA DE CLIENTES 👥📃")
+
+  if not clientes:
+    print("\n🔎👤 Nenhum cliente foi cadastrado ainda.")
+    return
+
+  for i, (cpf, dados) in enumerate(clientes.items(), 1):
+    print(f'''\n {i}. Nome: {dados['nome_cliente']}
+    CPF: {(formatar_cpf(cpf))}
+    Telefone: {formatar_telefone(dados['telefone'])}
+    E-mail: {dados['email']}
+    Endereço: {dados['endereco']}''')
+
+  print(f"\n  Total de clientes cadastrados: {len(clientes)}.")
+
+  print('''
+  - O que deseja fazer agora? -
+1 - Cadastrar outro cliente
+9 - Voltar ao menu anterior
+''')
+
+  opcao_clientes = ler_opcao("Qual opção deseja escolher? ",[1,9])
+
+  if opcao_clientes == 1:
+    cadastrar_cliente()
+  elif opcao_clientes == 9:
+    print("\n↩️ Voltando ao menu anterior...")
+    return
+
+#Função para definir o menu de pets
+def menu_pet():
+
+  while True:
+    titulo("🐾🐶 MENU DO PET 🐶🐾")
+
+    print('''
+    - PÁGINA INICIAL -
+1 - Cadastrar pet
+2 - Listar pets
+3 - Buscar pets
+9 - Voltar ao menu anterior
+''')
+
+    opcao_pets = ler_opcao("Qual opção deseja escolher? ",[1,2,3,9])
+
+    if opcao_pets == 1:
+      cadastrar_pet()
+    elif opcao_pets == 2:
+      listar_pets()
+    elif opcao_pets == 3:
+      buscar_pet()
+
+      print('''
+   - PÁGINA INICIAL -
+1 - Cadastrar pet
+9 - Voltar ao menu anterior
+''')
+
+      opcao_pets = ler_opcao("Qual opção deseja escolher? ",[1,9])
+
+      if opcao_pets == 1:
+        cadastrar_pet()
+      elif opcao_pets == 9:
+        print("\n↩️ Voltando ao menu anterior...")
+        return
+
+    elif opcao_pets == 9:
+      print("\n↩️ Voltando ao menu anterior...")
+      return
+
+#Função para cadastrar pets
+pets = {}
+id_pet = 1
+
+def cadastrar_pet():
+
+  while True:
+    global id_pet
+    print("\n   - DADOS DO PET -")
+
+    while True:
+      nome_pet = input("Nome do pet: ").strip().title()
+      if not nome_pet:
+        print("⚠️ Nome não pode estar vazio.")
+        continue
+      if not nome_pet.replace(" ","").isalpha():
+        print("⚠️ Nome inválido.")
+        continue
+      break
+
+    while True:
+      especie = input("Espécie: ").strip().title()
+      if not especie:
+        print("⚠️ Espécie não pode estar vazio.")
+        continue
+      if not especie.replace(" ", "").isalpha() or (len(especie) <= 1):
+        print("⚠️ Espécie inválida.")
+        continue
+      break
+
+    print("\n   - DADOS DO TUTOR -")
+
+    while True:
+      cpf_tutor = input("CPF do tutor: ").strip()
+      cpf_limpo = limpar_cpf(cpf_tutor)
+      if len(cpf_limpo) != 11 or not cpf_limpo.isdigit():
+        print("⚠️ CPF inválido. Deve conter 11 dígitos.")
+        continue
+      if cpf_limpo not in clientes:
+        print("⚠️ CPF do tutor ainda não cadastrado.")
+        continue
+      nome_tutor = clientes[cpf_limpo]['nome_cliente']
+      break
+
+    pet = {
+        'nome_pet': nome_pet,
+        'especie': especie,
+        'cpf_tutor': cpf_limpo,
+        'servicos': []
+        }
+
+    pets[id_pet] = pet
+    id_pet += 1
+
+    print(f'\n✅️ Pet "{pet['nome_pet']}" cadastrado com sucesso!')
+
+    print('''
+    - O que deseja fazer agora? -
+  1 - Cadastrar outro pet
+  2 - Listar pets cadastrados
+  9 - Voltar ao menu anterior
+  ''')
+
+    opcao_pets = ler_opcao("Digite uma opção: ",[1,2,9])
+
+    if opcao_pets == 1:
+      continue
+    elif opcao_pets == 2:
+      listar_pets()
+    elif opcao_pets == 9:
+      print("\n↩️ Voltando ao menu anterior...")
+      return
+
+#Função para listar os pets cadastrados
+def listar_pets():
+
+  while True:
+    if not pets:
+      titulo("📃🐶 LISTA DE PETS 🐶📃")
+      print("\n🔎🐶 Nenhum pet foi cadastrado ainda.")
+
+      print('''
+    - PÁGINA INICIAL -
+  1 - Cadastrar pet
+  9 - Voltar ao menu anterior
+  ''')
+
+      opcao_pets = ler_opcao("Qual opção deseja escolher? ",[1,9])
+
+      if opcao_pets == 1:
+        cadastrar_pet()
+      elif opcao_pets == 9:
+        print("\n↩️ Voltando ao menu anterior...")
+        return
+
+    else:
+      titulo("📃🐶 LISTA DE PETS 🐶📃")
+      print("\nPets cadastrados:")
+      for id_pet, pet in pets.items():
+        nome_tutor = clientes[pet['cpf_tutor']]['nome_cliente']
+        print(f"{id_pet}. {pet['nome_pet']} | {pet['especie']} | Tutor: {nome_tutor}")
+      print(f"\nTotal de pets cadastrados: {len(pets)}.")
+
+      print('''
+      - O que deseja fazer agora? -
+  1 - Cadastrar outro pet
+  2 - Listar pets cadastrados
+  9 - Voltar ao menu anterior
+  ''')
+
+      opcao_pets = ler_opcao("Digite uma opção: ",[1,2,9])
+
+      if opcao_pets == 1:
+        cadastrar_pet()
+      elif opcao_pets == 2:
+        continue
+      elif opcao_pets == 9:
+        print("\n↩️ Voltando ao menu anterior...")
+        return
+
+#Função para buscar o pet
+def buscar_pet():
+
+  nome = input("Digite o nome do pet: ").strip().title()
+
+  encontrados = []
+
+  for id_pet, pet in pets.items():
+    if nome in pet['nome_pet']:
+      encontrados.append((id_pet, pet))
+
+  if not encontrados:
+    print("⚠️ Nenhum pet encontrado.")
+    return
+
+  print("\n🐶 Pets encontrados:")
+
+  for id_pet, pet in encontrados:
+    nome_tutor = clientes[pet['cpf_tutor']]['nome_cliente']
+    print(f"{id_pet} - {pet['nome_pet']} | {pet['especie']} | Tutor: {nome_tutor}")
+
+#Função para o menu de serviços
+def menu_servicos():
+
+  while True:
+    titulo("🐾🐹 MENU DE SERVIÇOS 🐹🐾")
+
+    print('''
+    - PÁGINA INICIAL -
+1 - Realizar um serviço
+2 - Listar serviços realizados
+9 - Voltar ao menu anterior
+''')
+
+    menu_servicos = ler_opcao("Qual opção deseja escolher? ",[1,2,9])
+
+    if menu_servicos == 1:
+      realizar_servico()
+    elif menu_servicos == 2:
+      servicos_realizados()
+    elif menu_servicos == 9:
+      print("\n↩️ Voltando ao menu anterior...")
+      return
+
+def realizar_servico():
+
+  while True:
+    if not pets:
+      print("⚠️ Nenhum pet cadastrado.")
+      return
+
+    print("\nEscolha o pet:")
+
+    for id_pet, pet in pets.items():
+      nome_tutor = clientes[pet['cpf_tutor']]['nome_cliente']
+      print(f"{id_pet} - {pet['nome_pet']} ({nome_tutor})")
+
+    #escolha do pet para realizar o serviço
+    while True:
+      try:
+        escolha = int(input("Digite o ID do pet: "))
+        if escolha in pets:
+          pet_escolhido = pets[escolha]
+          break
+        else:
+          print("⚠️ Pet não encontrado.")
+      except ValueError:
+        print("⚠️ Entrada inválida.")
+
+    #escolha de serviços para o pet
+    while True:
+      titulo("🛁 SERVIÇOS PARA O PET 🛁")
+
+      print(f'''
+    1: {servicos[1]['nome_serv']} ------- R$ {servicos[1]['preco_serv']:.2f}
+    2: {servicos[2]['nome_serv']} -------- R$ {servicos[2]['preco_serv']:.2f}
+    3: {servicos[3]['nome_serv']} ---- R$ {servicos[3]['preco_serv']:.2f}
+    4: {servicos[4]['nome_serv']} -- R$ {servicos[4]['preco_serv']:.2f}
+    8: Serviços realizados
+    9: Voltar ao menu anterior
+    ''')
+
+      opcao_servicos = ler_opcao("Escolha uma das opções: ",[1,2,3,4,8,9])
+
+      if int(opcao_servicos) in servicos:
+        servico_escolhido = servicos[int(opcao_servicos)]
+        nome_serv = servico_escolhido['nome_serv']
+        preco_serv = servico_escolhido['preco_serv']
+        print(f"\n🏷 O serviço de {nome_serv} foi adicionado à conta do pet.")
+        pet_escolhido['servicos'].append(servico_escolhido.copy())
+      elif opcao_servicos == 8:
+        servicos_realizados()
+      elif opcao_servicos == 9:
+        print("\n↩️ Voltando ao menu anterior...")
+        return
+      else:
+        print("\n⚠️ Opção inválida!")
+
+      print('''
+      - O que deseja fazer agora? -
+  1 - Realizar outro serviço
+  2 - Listar serviços realizados
+  9 - Voltar ao menu anterior
+  ''')
+
+      opcao_servicos = ler_opcao("Digite uma opção: ",[1,2,9])
+
+      if opcao_servicos == 1:
+        continue
+      elif opcao_servicos == 2:
+        servicos_realizados()
+      elif opcao_servicos == 9:
+        print("\n↩️ Voltando ao menu anterior...")
+        return
+
+#Função para o histórico de clientes
+def historico_cliente():
+
+  while True:
+    cpf = input("Digite o CPF do cliente: ")
+    cpf_limpo = limpar_cpf(cpf)
+
+    if cpf_limpo not in clientes:
+      print("⚠️ Cliente não encontrado.")
+      return
+
+    total = 0
+    tem_pet = False
+
+    print(f"\n📊 Histórico de {clientes[cpf_limpo]['nome_cliente']}:")
+
+    for pet in pets.values():
+      if pet['cpf_tutor'] == cpf_limpo:
+        tem_pet = True
+        print(f"\n🐶 Pet: {pet['nome_pet']}")
+
+        for servico in pet['servicos']:
+          print(f" - {servico['nome_serv']} R$ {servico['preco_serv']:.2f}")
+          total += servico['preco_serv']
+
+    if not tem_pet:
+      print("⚠️ Cliente não possui pets cadastrados.")
+
+    print(f"\n💰 Total gasto: R$ {total:.2f}")
+
+    print('''
+        - O que deseja fazer agora? -
+    1 - Voltar ao menu principal
+    9 - Voltar ao menu anterior
+    ''')
+
+    opcao = ler_opcao("Digite uma opção: ", [1,9])
+
+    if opcao == 1:
+      return
+    elif opcao == 9:
+      print("\n↩️ Voltando ao menu anterior...")
+      return
+
+#==================> Início do programa
+menu_principal()
