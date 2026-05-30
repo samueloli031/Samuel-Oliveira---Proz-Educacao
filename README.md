@@ -15,5 +15,5 @@ Python 3.x (Lógica central, loops de repetição, funções e manipulação de 
 
 1. Clone o repositório:
 ```bash
-git clone [https://github.com/SEU_USUARIO/NOME_DO_REPOSITORIO.git](https://github.com/SEU_USUARIO/NOME_DO_REPOSITORIO.git)
+git clone [https://github.com/samueloli031/samuel-oliveira---Proz-Educacao.git](https://github.com/SEU_USUARIO/NOME_DO_REPOSITORIO.git)
       
